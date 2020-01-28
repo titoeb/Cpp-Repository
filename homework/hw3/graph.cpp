@@ -70,7 +70,7 @@ class Graph{
             vector< vector<float> > a(n_nodes, vector<float>(n_nodes, numeric_limits<float>::max()));
             this->adjecency_matrix = a;
 
-            // Iterator through file and read in vertices with their cost.
+            // Iterator through file and read in vertices with their respective costs.
             while(getline(graph_file, line)){
                 // process line
                 process_line(node_a, node_b, cost, line);
@@ -99,7 +99,7 @@ class Graph{
                     if (select_edge(generator) <= density){
                         this->adjecency_matrix[node_1][node_2] =  this->adjecency_matrix[node_2][node_1] = distances(generator);
                     } else {
-                        // A distance of -1.0 does mean that there is no edge between two nodes.
+                        // A distance of FLOAT_MAX does mean that there is no edge between two nodes.
                         this->adjecency_matrix[node_1][node_2] =  this->adjecency_matrix[node_2][node_1] = numeric_limits<float>::max();
                     }
                 }

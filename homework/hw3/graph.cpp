@@ -40,7 +40,6 @@ void process_line(int& node_a, int& node_b, float& cost, const string& line){
     string word;
     getline(input, word, ' ');
     node_a = stoi(word);
-
     getline(input, word, ' ');
     node_b = stoi(word);
 

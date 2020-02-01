@@ -32,6 +32,7 @@ bool is_palindrome(Bidirectional first, Bidirectional last){
     }
 }
 
+// Small test for palindrome
 int main(){
     list<int>v1 = {1, 2, 5,  4, 1}; 
     cout << is_palindrome(v1.begin(), v1.end()) << endl;

@@ -33,12 +33,10 @@ class Board{
         // The hex board itself 
 };
 
-
 void play_hex(int size){
     Board b(size);
 
 }
-
 
 int main(){
     int size;

@@ -3,33 +3,53 @@
 
 using namespace std;
 
+template <class numeric>
 class duo{
     public:
-        duo():first(0.0), second(0.0){}
+        // Constructors 
 
-        void set_first(float first){
+        duo(numeric first, numeric second):first(first), second(second){}
+
+        // Print
+        void print(){
+            cout << "(" << this->first << ", " << this->second << ")" << endl;
+        }
+
+        // Getters & Setters
+        void set_first(numeric first){
             this->first = first;
         }
 
-        void set_second(float second){
+        void set_second(numeric second){
             this->second = second;
         }
 
-        float get_first(){
+        numeric get_first(){
             return this->first;
         }
 
-        float get_second(){
+        numeric get_second(){
             return this->second;
         }
 
     protected:
-        float first, second;
+        numeric first, second;
 };
 
-class point:public duo{
+template <class numeric>
+class point:public duo<numeric>{
     public:
-        float length(){
-            return sqrt(first* first + second* second);
+        // constructor
+        point(numeric first, numeric second):duo<numeric>(first, second){}
+
+        numeric length(){
+            return sqrt(duo<numeric>::first + duo<numeric>::second);
         }
 };
+
+int main(){
+    point<double> b(10.0, 10.0);
+    b.print();
+    cout << b.length() << endl;
+    return 0;
+}

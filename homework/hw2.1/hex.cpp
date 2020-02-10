@@ -1,21 +1,10 @@
 #include "hex.h"
 
-    Board::Board(int size):size(size){
-        // Create a board of size size
+    Hex::Hex(int size):size(size), Player1(hexGraph(size)), Player2(hexGraph(size)){
+        
     }
 
     // print method
-    void Board::print(){
+    void Hex::print(){
 
-    }
-
-    // Getter and setter
-    Player Board::get_position(int row, int col){
-        // 
-
-    }
-
-    void Board::set_position(int row, int col, Player p){
-        // Set an element in the stupid graph structure.
-        
     }

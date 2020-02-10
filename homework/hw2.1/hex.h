@@ -16,8 +16,6 @@ class Hex{
         // print method
         void print();
 
-
-
     private:
         // Size of the hex board
         int size;

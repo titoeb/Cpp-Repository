@@ -25,3 +25,21 @@ bool is_in(int x_coordinate, int y_coordinate, int dimensions_board){
     
     return true;
 }
+
+bool not_in_deques(int node,  deque<int> deque1, deque<int> deque2){
+    // Iterate over deque1
+    for(int i = 0; i < deque1.size(); ++i){
+        if(deque1[i] == node){
+            return false;
+        }
+    }
+
+    // Iterate over deque2
+      for(int i = 0; i < deque2.size(); ++i){
+        if(deque2[i] == node){
+            return false;
+        }
+    }
+
+    return true;
+}

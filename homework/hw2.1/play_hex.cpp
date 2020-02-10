@@ -1,6 +1,5 @@
-#include "hex.h"
+#include "play_hex.h"
 
 void play_hex(int size){
-    Board b(size);
-
+    Hex h(size);
 }

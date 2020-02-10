@@ -2,28 +2,27 @@
 #define HEX_H
 
 #include<iostream>
+
+#include "hexgraph.h"
+
 using namespace std;
 
-// Function interacting with the user and steering the game.
-enum class Player{P1, P2, Empty};
-
 // This will simulate the board.
-class Board{
+class Hex{
     public:
         // constructor
-        Board(int size);
+        Hex(int size);
 
         // print method
         void print();
 
-        // Getter and setter
-        Player get_position(int row, int col);
 
-        void set_position(int row, int col, Player p);
 
     private:
         // Size of the hex board
         int size;
+        hexGraph Player1;
+        hexGraph Player2;
 };
 
 #endif

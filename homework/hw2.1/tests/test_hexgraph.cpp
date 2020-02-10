@@ -5,7 +5,7 @@
 
 #include "../hexgraph.h"
 
-// Just a small sanity test for hexgraph.
+// A small sanity test for hexgraph.
 BOOST_AUTO_TEST_CASE(Test_Hexgraph_1) {
   hexGraph test(3);
   test.addNode(0, 0);

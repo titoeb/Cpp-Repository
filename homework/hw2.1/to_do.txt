@@ -1,0 +1,20 @@
+Main things to do:
+    -> Add the print method in the hex class.
+
+    -> Write a print funciont for the board
+
+    -> Implement stupid AI as function in hex:
+        -> Choose a random field to put the point in.
+
+    -> Add the gameplay into the play_hex function:
+        -> While the game is not won
+            -> Show the board
+            -> Ask the player to move in the console
+            -> Let the AI take its next move
+        -> if the game is won:
+            -> Print out the winner
+
+    -> Implement "find longest path in the graph"-function in hexgraph class.
+    
+    -> Write a better version of the AI: Append longest path towards opposite side
+        -> What to do if move is impossible?

@@ -17,7 +17,15 @@ class hexGraph{
 
         // Add a single node into the graph.
         void addNode(int x, int y);
-            
+
+        // Print out all connections that exist in the graph
+        // This is only used for debugging
+        void print();
+
+        // Check whether this node was put into the graph (e.g. is connected to any other node.)
+        bool node_exists(int node);
+        bool node_exists(int node_x_coordinate, int node_y_coordinate);
+
         // Test whether two nodes are connected.
         bool is_connected(int node_a, int node_b);
         bool is_connected(int node_a_x_coordinate, int node_a_y_coordinate, int node_b_x_coordinate, int node_b_y_coordinate);
@@ -28,6 +36,6 @@ class hexGraph{
     private:
         int dimension;
         vector<deque<int> > edgelist;
-};
+}; 
 
 #endif

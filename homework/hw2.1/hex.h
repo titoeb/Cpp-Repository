@@ -11,7 +11,7 @@ using namespace std;
 class Hex{
     public:
         // constructor
-        Hex(int size);
+        Hex(int size, string player_blue, string player_red);
 
         // print method
         void print();
@@ -21,15 +21,27 @@ class Hex{
         bool player_red_won();
         bool player_blue_won();
 
-        // Add nodes for users
-        bool add_node_red(int node_x, int node_y);
-        bool add_node_blue(int node_x, int node_y);
+        // Simulate a turn of a player.
+        void player_red_turn();
+        void player_blue_turn(); 
 
+        
     private:
         // Size of the hex board
         int size;
+
+        // Here the graphs for the two players are stored
         hexGraph PlayerRed;
         hexGraph PlayerBlue;
+
+        // The choices of play
+        string player_blue;
+        string player_red;
+
+        // Add nodes for users.
+        bool add_node_red(int node_x, int node_y);
+        bool add_node_blue(int node_x, int node_y);
+
 };
 
 #endif

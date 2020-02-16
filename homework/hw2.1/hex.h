@@ -11,7 +11,7 @@ using namespace std;
 class Hex{
     public:
         // constructor
-        Hex(int size, string player_blue, string player_red);
+        Hex(int size, int player_blue, int player_red);
 
         // print method
         void print();
@@ -25,18 +25,22 @@ class Hex{
         void player_red_turn();
         void player_blue_turn(); 
 
+        // Actions for the AI
+        void user_move(int player);
+        void random_ai(int player);
+
         
     private:
         // Size of the hex board
         int size;
 
         // Here the graphs for the two players are stored
-        hexGraph PlayerRed;
-        hexGraph PlayerBlue;
+        hexGraph PlayerRed; // Also known as player 0.
+        hexGraph PlayerBlue; // Also known as player 1.
 
         // The choices of play
-        string player_blue;
-        string player_red;
+        int player_blue;
+        int player_red;
 
         // Add nodes for users.
         bool add_node_red(int node_x, int node_y);

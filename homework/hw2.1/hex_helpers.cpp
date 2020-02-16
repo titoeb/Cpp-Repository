@@ -43,3 +43,14 @@ bool not_in_deques(int node,  deque<int> deque1, deque<int> deque2){
 
     return true;
 }
+
+// Random integer
+int rand_int(int begin, int end){
+    int diff = end - begin;
+
+    // Initiallize pseudo-random number generator.
+    srand(time(nullptr));
+
+    int random_integer = rand() % diff;
+    return begin + random_integer;
+}

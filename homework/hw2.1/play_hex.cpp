@@ -2,38 +2,29 @@
 
 void play_hex(){
     int size;
-    string player_red, player_blue;
+    int player_red, player_blue;
 
     // Select the game size
     cout << "Welcome the game of hax." << endl;
     cout << "Please insert the size of the board. The size should be more than 1." << endl;
     cin >> size;
 
-    //  Select the players!
-    // Create the viable options for player.
-    vector<string> options; 
-    options.push_back("RealHuman");
-    options.push_back("StupidAI");
-
     // Intro Players
-    cout << "Please select the players to be one of: ";
-    for(auto player = options.begin(); player != options.end(); ++player) cout << *player << ", ";
-    cout << endl;
-
+    cout << "Please select the players to be one of: 0: RealHuman, 1: StupidAI" << endl;
     // Select Player Blue
     cout << "Your Selection for player Blue:" << endl;
     cin >> player_blue;
 
-    // !!! Error check whether the input is correct.
-
     // Select Player Red
     cout << "Your Selection for player Red:" << endl;
-    cin >> player_blue;
+    cin >> player_red;
 
     // !!! Error check whether the input is correct!
 
     // Create the game
     Hex h(size, player_red, player_blue);
+
+    cout << "Player blue playes 'X', player red playes 'O'." << endl;
 
     // Run the game
     while(!h.game_over()){
@@ -44,16 +35,14 @@ void play_hex(){
         h.player_blue_turn();
 
         h.print();
-
-        // ... to do ...
-        // to break the infinit loop at the moment:
-        break;
     }
     if (h.player_blue_won()){
         cout << "Player Blue Won!" << endl;
+        h.print();
     } else {
         if(h.player_red_won()){
             cout << "Player Red Won!" << endl;
+            h.print();
         } else {
             cout << "This can't be! At least one player needs to have won!" << endl;
         }

@@ -33,3 +33,8 @@ template<class Sortable>
 void heapsort(vector<Sortable>& data){
     
 }
+
+template<class Sortable>
+void quicksort_standard_library(vector<Sortable>& data){
+    sort(data.begin(), data.end());
+}

@@ -3,6 +3,8 @@
 
 #include<iostream>
 #include<vector>
+#include<algorithm>
+
 #include "helpers.h"
 
 using namespace std;
@@ -27,6 +29,9 @@ void introsort(vector<Sortable>& data);
 
 template<class Sortable>
 void heapsort(vector<Sortable>& data);
+
+template<class Sortable>
+void quicksort_standard_library(vector<Sortable>& data);
 
 #include "sort.cpp"
 #endif

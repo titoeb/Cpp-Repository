@@ -1,9 +1,12 @@
 Main things to do:
     -> Implement stupid AI as function in hex:
         -> Needs to be faster
-    
-    -> Faster algorithm to find whether opposited sides are connect
-        -> Simply brute forcing all options is not fast enough.
+
+    -> Before optimizing, Profile the program to the find the true bottleneck.
+        -> Faster algorithm to find whether opposited sides are connect
+            -> Simply brute forcing all options is not fast enough.
+            -> alternative:
+                -> Remove inner loop and adapt is_connect to compare to hash lookup of all nodes.
     
     -> Write a better version of the AI: Append longest path towards opposite side
         -> What to do if move is impossible?

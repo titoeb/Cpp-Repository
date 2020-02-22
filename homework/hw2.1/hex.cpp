@@ -1,6 +1,6 @@
 #include "hex.h"
 
-Hex::Hex(int size, int player_blue, int player_red):size(size),player_blue(player_blue), player_red(player_red), PlayerRed(hexGraph(size)), PlayerBlue(hexGraph(size)){}
+Hex::Hex(int size, Player player_blue, Player player_red):size(size),player_blue(player_blue), player_red(player_red), PlayerRed(hexGraph(size)), PlayerBlue(hexGraph(size)){}
 // print method
 void Hex::print(){
     for(int row=0; row < this->size; ++row){
@@ -121,30 +121,30 @@ bool Hex::add_node_blue(int node_x, int node_y){
 
 // Simulate the turns for the players.
 void Hex::player_red_turn(){
-     if (this->player_red == 0){
+     if (this->player_red == Player::HUMAN){
         Hex::user_move(0);
     } else {
-        if (this->player_red == 1){
+        if (this->player_red == Player::STUPIDAI){
             Hex::random_ai(0);
         } else {
-            cout << "Player cannot be " << this->player_red << endl;
+            cout << "Player cannot be " << static_cast<int>(this->player_red) << endl;
         }
     }
 }
 void Hex::player_blue_turn(){
-    if (this->player_blue ==  0){
+    if (this->player_blue ==  Player::HUMAN){
         Hex::user_move(1);
     } else {
-        if (this->player_blue == 1){
+        if (this->player_blue == Player::STUPIDAI){
             Hex::random_ai(1);
         } else {
-            cout << "Player cannot be " << this->player_blue << endl;
+            cout << "Player cannot be " << static_cast<int>(this->player_blue) << endl;
         }
     }
 }
 
 // User moves.
-void Hex::user_move(int player){
+void Hex::user_move(int player){ 
     bool correct_move = false;
     int row, col;
 

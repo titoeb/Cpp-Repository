@@ -7,11 +7,14 @@
 
 using namespace std;
 
+// Enum level for ai
+enum class Player{HUMAN, STUPIDAI};
+
 // This will simulate the board.
 class Hex{
     public:
         // constructor
-        Hex(int size, int player_blue, int player_red);
+        Hex(int size, Player player_blue, Player player_red);
 
         // print method
         void print();
@@ -39,8 +42,8 @@ class Hex{
         hexGraph PlayerBlue; // Also known as player 1.
 
         // The choices of play
-        int player_blue;
-        int player_red;
+        Player player_blue;
+        Player player_red;
 
         // Add nodes for users.
         bool add_node_red(int node_x, int node_y);

@@ -10,6 +10,7 @@ void play_hex(){
     cin >> size;
 
     // Intro Players
+    // This is stupid. The codes are defined in the PLAYER enum and could change...
     cout << "Please select the players to be one of: 0: RealHuman, 1: StupidAI" << endl;
     // Select Player Blue
     cout << "Your Selection for player Blue:" << endl;
@@ -22,7 +23,7 @@ void play_hex(){
     // !!! Error check whether the input is correct!
 
     // Create the game
-    Hex h(size, player_red, player_blue);
+    Hex h(size, static_cast<Player>(player_red), static_cast<Player>(player_blue));
 
     cout << "Player blue playes 'X', player red playes 'O'." << endl;
 

@@ -6,7 +6,7 @@
 #include "sort.h"
 
 // SET-UP:
-const int N_TIMES = 10000;
+const int N_TIMES = 100;
 const int LENGTH  = 1000;
 
 // Helper function to avoid repetitive code in testing:
@@ -54,6 +54,23 @@ BOOST_AUTO_TEST_CASE(Test_Helpers){
     BOOST_CHECK_EQUAL(sorted(test_6), false);
 }
 
+
+BOOST_AUTO_TEST_CASE(Test_quicksort){
+    random_test_sorting(N_TIMES, LENGTH, &quicksort<double>);
+}
+
 BOOST_AUTO_TEST_CASE(Test_std){
-    benchmark_sorting(N_TIMES, LENGTH, &quicksort_standard_library<double>);
+    random_test_sorting(N_TIMES, LENGTH, &quicksort_standard_library<double>);
+}
+
+BOOST_AUTO_TEST_CASE(Test_selectionsort){
+    random_test_sorting(N_TIMES, LENGTH, &selectionsort<double>);
+}
+
+BOOST_AUTO_TEST_CASE(Test_insertionsort){
+    random_test_sorting(N_TIMES, LENGTH, &insertionsort<double>);
+}
+
+BOOST_AUTO_TEST_CASE(Test_bubblesort){
+    random_test_sorting(N_TIMES, LENGTH, &bubblesort<double>);
 }

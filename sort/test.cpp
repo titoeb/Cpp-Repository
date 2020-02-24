@@ -4,10 +4,12 @@
 #include <boost/test/unit_test.hpp>
 #include "helpers.h"
 #include "sort.h"
-
+#include "select.h"
+ 
 // SET-UP:
 const int N_TIMES = 100;
 const int LENGTH  = 1000;
+bool printing = false;
 
 // Helper function to avoid repetitive code in testing:
 // Testing a given sorting algorithm on random data
@@ -19,15 +21,58 @@ void random_test_sorting(int n_times, int length, void(*sorting)(vector<Sortable
         // Generate a random vectors
         test = random_vector<double>(length, -100.0, 100.0);
 
+        // if print is true print it out
+        if(printing){
+            cout << "Random vector: " << endl;
+            for(auto elem: test) cout << elem << " ";
+            cout << endl;
+        }
+
         // Sort the vector
         sorting(test);
 
+        if(printing){
+            cout << "Sorted vector: " << endl;
+            for(auto elem: test) cout << elem << " ";
+            cout << endl;
+        }
+
         // Assert that the vector is sorted.
         BOOST_CHECK_EQUAL(sorted(test), true);
-        
     }
 }
 
+// Check wether a random vector is sorted smallest to largest value
+template<class Sortable>
+bool kth_value(vector<Sortable>& candidate, Sortable value, int k){
+    quicksort(candidate);
+    if(candidate[k] == value){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// TESTING 
+BOOST_AUTO_TEST_CASE(Test_kth_value){
+    vector<double> test = {0.0, 4.0, -1.0, 2.0};
+    bool result;
+
+    print(test);
+
+    cout <<  quickselect(test, 3) << endl;
+
+    result = kth_value(test, quickselect(test, 3), 3);
+    BOOST_CHECK_EQUAL(result, true);
+
+    result = kth_value(test, 4.0, 2);
+    BOOST_CHECK_EQUAL(result, false);
+    
+    result = kth_value(test, 2.0 , 2);
+    BOOST_CHECK_EQUAL(result, true);
+} 
+
+/*
 // Testing the test for sorted arrays
 BOOST_AUTO_TEST_CASE(Test_Helpers){
 
@@ -73,4 +118,33 @@ BOOST_AUTO_TEST_CASE(Test_insertionsort){
 
 BOOST_AUTO_TEST_CASE(Test_bubblesort){
     random_test_sorting(N_TIMES, LENGTH, &bubblesort<double>);
+} 
+
+BOOST_AUTO_TEST_CASE(Test_mergesort_1){
+    random_test_sorting(N_TIMES, LENGTH, &mergesort<double>);
 }
+
+BOOST_AUTO_TEST_CASE(Test_heapsort){
+    random_test_sorting(N_TIMES, LENGTH, &heapsort<double>);
+}
+
+BOOST_AUTO_TEST_CASE(Test_merge_1){
+    vector<double> test = {0.0, 3.0, 2.0, 4.0};
+    vector<double> buffer(test.size());
+    merge(test, buffer, 0, 2, 2, 4);
+    BOOST_CHECK_EQUAL(sorted(test), true);
+}
+
+BOOST_AUTO_TEST_CASE(Test_merge_2){
+    vector<double> test = {0.0, 2.0, 3.0, 4.0};
+    vector<double> buffer(test.size());
+    merge(test, buffer, 0, 2, 2, 4);
+    BOOST_CHECK_EQUAL(sorted(test), true);
+}
+
+BOOST_AUTO_TEST_CASE(Test_merge_3){
+    vector<double> test = {3.0, 4.0, 0.0, 2.0};
+    vector<double> buffer(test.size());
+    merge(test, buffer, 0, 2, 2, 4);
+    BOOST_CHECK_EQUAL(sorted(test), true);
+}*/

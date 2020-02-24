@@ -1,51 +1,4 @@
 #include "sort.h"
-
-// --------------------------------------------------------------------
-// Helper functions
-// --------------------------------------------------------------------
-template<class Sortable>
-int inline argmin(vector<Sortable>& data, int start, int end){
-    int min_idx = start;
-
-    for(int idx = start+1; idx < end; ++idx){
-        if (data[idx] < data[min_idx]){
-            min_idx = idx;
-        }
-    }
-
-    return min_idx;
-}
-
-template<class Sortable>
-void inline swap(vector<Sortable>& data, int idx_1, int idx_2){
-    Sortable tmp = data[idx_1];
-    data[idx_1] = data[idx_2];
-    data[idx_2] = tmp;
-}
-
-// insert data from idx_1 at position idx_2 and move all entries up one.
-template<class Sortable>
-void inline insert(vector<Sortable>& data, int insert_into, int taken_from){
-    Sortable final_insert = data[taken_from];
-    Sortable tmp = data[insert_into];
-    Sortable tmp_buffer;
-
-    for(int idx = insert_into; idx < taken_from; ++idx){
-        tmp_buffer = data[idx + 1];
-        data[idx + 1] = tmp;
-        tmp = tmp_buffer;
-    }   
-    data[insert_into] = final_insert;
-}
-
-template<class Sortable>
-void print(vector<Sortable>& data){
-    for(auto element: data){
-        cout << element << " ";
-    }
-    cout << endl;
-}
-
 // --------------------------------------------------------------------
 // The search algorithms
 // --------------------------------------------------------------------
@@ -101,52 +54,6 @@ void bubblesort(vector<Sortable>& data){
 
 // Quick sort!
 template<class Sortable>
-Sortable med3(Sortable a, Sortable b, Sortable c){
-    if((b <= a && c >= a)|| (c <= a && b >= a)){
-        return a;
-    }
-    if((a <= b && c >= b)|| (c <= b && a >= b)){
-        return b;
-    }
-    if((a <= c && b >= c)|| (b <= c && a >= c)){
-        return c;
-    }
-    cout << "THIS CAN'T BE!!" << endl;
-}
-    
-template<class Sortable>
-Sortable pivot_med3(vector<Sortable>& data, int start, int end){
-    end = end - 1;
-   return med3(data[start], data[static_cast<int>(static_cast<double>(start + end) / 2.0)], data[end]);
-}
-
-template<class Sortable>
-Sortable pivot_middle(vector<Sortable>& data, int start, int end){
-   return data[static_cast<int>( static_cast<double>(start + end) / 2.0)];
-}
-
-template<class Sortable>
-int find_sort_partition(vector<Sortable>& data, int start, int end){
-   Sortable pivot = pivot_middle(data, start, end);
-   int i = start;
-   int j = end - 1;
-
-    while(true){
-        while(data[i] < pivot){
-            i += 1;
-        }
-        while(data[j] > pivot){
-            j -= 1;
-        }
-        if(i >= j){
-            return j;
-        } else {
-            swap(data, i, j);
-        }
-    }
-}
-
-template<class Sortable>
 void quicksort_internal(vector<Sortable>& data, int start, int end){
    if(end > start + 1){
        int pivot = find_sort_partition(data, start, end);
@@ -162,18 +69,104 @@ void quicksort(vector<Sortable>& data){
 
 // Merge sort
 template<class Sortable>
-void mergesort(vector<Sortable>& data){
+void merge(vector<Sortable>& data,vector<Sortable>& buffer, int start_1, int end_1, int start_2, int end_2){
+    /*cout << "merge(data, buffer, " << start_1 << ", " << end_1 << ", " << start_2 << ", " << end_2 << ")" << endl;
+    cout << "\tBefore Sorting: ";
+    for(auto elem: data) cout << elem << " ";
+    cout << endl;*/
 
+
+    // Merge the two sections data[start_1:end_1], data[start2:end_2] into the buffer
+    int iter_1 = start_1;
+    int iter_2 = start_2;
+    int buffer_idx = 0;
+    while((iter_1 < end_1) && (iter_2 < end_2)){
+        if (data[iter_1] < data[iter_2]){
+            // Append from start_1, end_1 to the buffer
+            buffer[buffer_idx] = data[iter_1];
+            ++buffer_idx;
+            ++iter_1;
+        } else {
+            // Append from start_2, end_1 to the buffer.
+            buffer[buffer_idx] = data[iter_2];
+            ++buffer_idx;
+            ++iter_2;
+        }
+    }
+
+    while(iter_1 < end_1){
+        buffer[buffer_idx] = data[iter_1];
+        ++buffer_idx;
+        ++iter_1;
+    }
+
+    while(iter_2 < end_2){
+        buffer[buffer_idx] = data[iter_2];
+        ++buffer_idx;
+        ++iter_2;
+    }
+
+    iter_1 = start_1;
+    iter_2 = start_2;
+    // Write the buffer back into the original array.
+    for(int idx = 0; idx < buffer_idx; ++idx){
+        if (iter_1 <  end_1){
+            data[iter_1] = buffer[idx];
+            ++iter_1;
+        } else {
+            data[iter_2] = buffer[idx];
+            iter_2++;
+        }
+    }
+
+    /*cout << "\tAfter Sorting: ";
+    for(auto elem: data) cout << elem << " ";
+    cout << endl;*/
 }
 
-// Intro Sort
 template<class Sortable>
-void introsort(vector<Sortable>& data){
+void mergesort_internal(vector<Sortable>& data, vector<Sortable>& buffer, int start, int end){
+    int middle = static_cast<int>(static_cast<double>(start + end) / 2.0);
 
+    //cout << "mergesort_internal(data, buffer, " << start <<", " << end << ")" << endl;
+    //cout << "\tmiddle: " << middle << endl; 
+    // Call mergesort on subarrays
+    if ((end - start) > 1){
+        mergesort_internal(data, buffer, start, middle);
+        mergesort_internal(data, buffer, middle, end);
+
+        if((end-start) == 2){
+            if(data[start] > data[end-1]){
+                swap(data, start, end-1);
+            }
+        } else {
+            merge(data, buffer, start, middle, middle, end);
+        }
+    }
+    // I know that within start, middle and middle, end the arrays are sorted
+    // I have to merge these two arrays now.
+    
+}
+template<class Sortable>
+void mergesort_internal(vector<Sortable>& data, int start, int end){
+    // Create the buffer
+    vector<Sortable> buffer(data.size());
+    mergesort_internal(data, buffer, start, end);
+}
+
+template<class Sortable>
+void mergesort(vector<Sortable>& data){
+    mergesort_internal(data, 0, data.size());
 }
 
 // Heap Sort
+/* To improve:
+    - Build your own heap
+    - Make it in place by storing references to the vectors element in the heap.
+*/
 template<class Sortable>
 void heapsort(vector<Sortable>& data){
-    
+    // Built the heap
+    make_heap(data.begin(), data.end());
+    sort_heap(data.begin(), data.end());
 }

@@ -53,14 +53,42 @@ bool kth_value(vector<Sortable>& candidate, Sortable value, int k){
     }
 }
 
+template<class Sortable>
+void random_test_kth(const int n_times, const int length, Sortable(*find_kth)(vector<Sortable>& data, int kth)){
+    auto test = random_vector<double>(length, -100.0, 100.0);
+    double kth;
+    bool result;
+    int random_idx;
+
+    // generate a random idx
+    random_device dev;
+    mt19937 rng(dev());
+    uniform_int_distribution<std::mt19937::result_type> dist6(0,length);
+    for(int idx=0; idx<n_times; ++idx){
+        // Generate a random vectors
+        test = random_vector<double>(length, -100.0, 100.0);
+
+        // Generate random index to find:
+        random_idx = dist6(rng); 
+
+        // Sort the vector
+        kth = find_kth(test, random_idx);
+
+        // Assert that the vector is sorted.
+        result = kth_value(test, kth, random_idx);
+        BOOST_CHECK_EQUAL(result, true);
+    }
+}
+
 // TESTING 
 BOOST_AUTO_TEST_CASE(Test_kth_value){
+
     vector<double> test = {0.0, 4.0, -1.0, 2.0};
     bool result;
 
     print(test);
 
-    cout <<  quickselect(test, 3) << endl;
+    cout << quickselect(test, 2) << endl;
 
     result = kth_value(test, quickselect(test, 3), 3);
     BOOST_CHECK_EQUAL(result, true);
@@ -71,6 +99,10 @@ BOOST_AUTO_TEST_CASE(Test_kth_value){
     result = kth_value(test, 2.0 , 2);
     BOOST_CHECK_EQUAL(result, true);
 } 
+
+BOOST_AUTO_TEST_CASE(Test_quicksort){
+    random_test_kth(N_TIMES, LENGTH, &quickselect<double>);
+}
 
 /*
 // Testing the test for sorted arrays

@@ -20,7 +20,6 @@ vector<Sortable> random_vector(int length, Sortable min, Sortable max){
     return  random_vector;
 }
 
-
 // Create a random vector containing values between min and max
 template<class Sortable>
 vector<Sortable> sorted_vector(int length, Sortable min, Sortable max){
@@ -68,7 +67,6 @@ bool sorted(vector<Sortable>& candidate){
         }
     }
 }
-
 
 template<class Sortable>
 double benchmark_sorting_random(int n_times, int length, void(*sorting)(vector<Sortable>& data)){

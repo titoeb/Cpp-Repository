@@ -85,12 +85,6 @@ BOOST_AUTO_TEST_CASE(Test_kth_value){
 
     vector<double> test = {0.0, 4.0, -1.0, 2.0};
     bool result;
-
-    /*
-    print(test);
-    int pos = 3;
-    cout << "pos: " << pos << " result: " << quickselect(test, pos) << endl;
-    */
     
     BOOST_CHECK_EQUAL(quickselect(test, 0), -1.0);
 
@@ -106,7 +100,7 @@ BOOST_AUTO_TEST_CASE(Test_quickselect){
     random_test_kth(N_TIMES, LENGTH, &quickselect<double>);
 }
 
-/* 
+
 // Testing the test for sorted arrays
 BOOST_AUTO_TEST_CASE(Test_Helpers){
 
@@ -181,4 +175,4 @@ BOOST_AUTO_TEST_CASE(Test_merge_3){
     vector<double> buffer(test.size());
     merge(test, buffer, 0, 2, 2, 4);
     BOOST_CHECK_EQUAL(sorted(test), true);
-}*/
+}

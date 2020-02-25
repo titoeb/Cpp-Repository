@@ -7,7 +7,7 @@
 #include "select.h"
  
 // SET-UP:
-const int N_TIMES = 100;
+const int N_TIMES = 1000;
 const int LENGTH  = 1000;
 bool printing = false;
 
@@ -63,7 +63,7 @@ void random_test_kth(const int n_times, const int length, Sortable(*find_kth)(ve
     // generate a random idx
     random_device dev;
     mt19937 rng(dev());
-    uniform_int_distribution<std::mt19937::result_type> dist6(0,length);
+    uniform_int_distribution<std::mt19937::result_type> dist6(0,length - 1);
     for(int idx=0; idx<n_times; ++idx){
         // Generate a random vectors
         test = random_vector<double>(length, -100.0, 100.0);
@@ -86,25 +86,27 @@ BOOST_AUTO_TEST_CASE(Test_kth_value){
     vector<double> test = {0.0, 4.0, -1.0, 2.0};
     bool result;
 
+    /*
     print(test);
-
-    cout << quickselect(test, 2) << endl;
-
-    result = kth_value(test, quickselect(test, 3), 3);
-    BOOST_CHECK_EQUAL(result, true);
-
-    result = kth_value(test, 4.0, 2);
-    BOOST_CHECK_EQUAL(result, false);
+    int pos = 3;
+    cout << "pos: " << pos << " result: " << quickselect(test, pos) << endl;
+    */
     
-    result = kth_value(test, 2.0 , 2);
-    BOOST_CHECK_EQUAL(result, true);
+    BOOST_CHECK_EQUAL(quickselect(test, 0), -1.0);
+
+    BOOST_CHECK_EQUAL(quickselect(test, 1), 0.0);
+    
+    BOOST_CHECK_EQUAL(quickselect(test, 2), 2.0);
+
+    BOOST_CHECK_EQUAL(quickselect(test, 3), 4.0);
 } 
 
-BOOST_AUTO_TEST_CASE(Test_quicksort){
+
+BOOST_AUTO_TEST_CASE(Test_quickselect){
     random_test_kth(N_TIMES, LENGTH, &quickselect<double>);
 }
 
-/*
+/* 
 // Testing the test for sorted arrays
 BOOST_AUTO_TEST_CASE(Test_Helpers){
 

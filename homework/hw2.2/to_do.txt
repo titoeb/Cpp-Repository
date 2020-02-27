@@ -1,0 +1,8 @@
+Main things to do:
+    -> Implement stupid AI as function in hex:
+        -> Needs to be faster
+
+    -> Before optimizing, Profile the program to the find the true bottleneck.
+        -> Faster algorithm to find whether opposited sides are connect
+            -> Simply brute forcing all options is not fast enough.
+            -> Use the union algorithm or a specialized path algorithm

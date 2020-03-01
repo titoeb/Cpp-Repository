@@ -54,7 +54,7 @@ bool Hex::player_red_won(){
 
             if(PlayerRed.node_exists(i, 0) && PlayerRed.node_exists(j, (this->size - 1))){
                 if(PlayerRed.is_connected(i, 0, j, (this->size - 1))){
-                     return true;
+                    return true;
                 }      
             }
         }

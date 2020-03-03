@@ -5,6 +5,7 @@
 #include<vector>
 #include<deque>
 #include<tuple>
+#include<queue>
 
 using namespace std;
 
@@ -62,75 +63,44 @@ class Queue{
         vector<bool> is_in;
 };
 
+// A node will be tuple of int, float. to use the priority queue I need to define a custom comparison 
+// To compare two points 
+class GreaterNode{ 
+public: 
+    int operator() (const tuple<int, float>& node_1, const tuple<int, float>& node_2){ 
+        return get<1>(node_1) > get<1>(node_2); 
+    } 
+}; 
+
 // My implementation of a priority queue that will store nodes and there respective
 // It will used for the open set later on.
 class PriorityQueue{
     public:
 
         // Constructor only allocates the internal dequeue nodes and weigths
-        PriorityQueue():nodes(deque<int>()), weights(deque<float>()){}
+        PriorityQueue(int n_nodes):nodes(priority_queue <tuple<int, float>, vector<tuple<int, float>>, GreaterNode>()), is_in(vector<bool>(n_nodes, false)){}
 
         // Add a new node into the Priority qeue.
         // Find the correct position and insert it in both
         // the nodes deqeue and the weight deqeue.
         void add(int node, float weight){
-            auto nodes_iterator = this->nodes.begin();
-            auto weights_iterator = this->weights.begin();
-
-            // Find the correct position to insert the node
-            while((*weights_iterator < weight) && (nodes_iterator != this->nodes.end())){
-                ++nodes_iterator;
-                ++weights_iterator;
-            }
-
-            // Insert the node and its weight at the found position
-            // into the nodes and weights deqeue.
-            if(nodes_iterator == this->nodes.end()){
-                this->nodes.push_back(node);
-                this->weights.push_back(weight);
-            } else {
-                this->nodes.insert(nodes_iterator, node);
-                this->weights.insert(weights_iterator, weight);
-            }
-        }
-
-        void update(int node, float weight){
-            // Update the weight of a node if it is smaller than the original weight, e.g. the path is shorter.
-            // This assuemes that then node is in the priority queue.
-
-            // find the node 
-            auto nodes_iterator = this->nodes.begin();
-            auto weights_iterator = this->weights.begin();
-
-            // Find the correct position to insert the node
-            while(*nodes_iterator != node){
-                ++nodes_iterator;
-                ++weights_iterator;
-            }
-
-            // if the weight of the node found is larger than the new weight
-            // Remove the original node and insert it into the right position.
-            if(*weights_iterator > weight){
-
-                this->nodes.erase(nodes_iterator);
-                this->weights.erase(weights_iterator);
-
-                this->add(node, weight);
-            }
+            this->nodes.push(tuple<int, float>(node, weight));
+            this->is_in[node] = true;
         }
 
         // Give the first nodes and its weight and remove it from the priority queue
         tuple<int, float> pop(){
-            float weight;
-            int node;
 
-            weight = this->weights.front();
-            node = this->nodes.front();
+            // Get the top node from the min heap
+            tuple<int, float> top_node = this->nodes.top();
 
-            this->weights.pop_front();
-            this->nodes.pop_front();
+            // Remove the top node
+            this->nodes.pop();
 
-            return make_tuple(node, weight);
+            // Also remove the node from the is_in vector.
+            this->is_in[get<0>(top_node)];
+
+            return top_node;
         }
         
         // Return the size of the queue
@@ -140,14 +110,16 @@ class PriorityQueue{
 
         // Print the priority queue.
         void print(){
-            for(auto iterator: this->nodes){
-                cout << iterator << "   ";
+            // Create a hard copy of the priority queue.
+            auto local_copy =  priority_queue <tuple<int, float>, vector<tuple<int, float>>, GreaterNode>(this->nodes);
+            tuple<int, float> tmp;
+            while(local_copy.size() > 0){
+                tmp = local_copy.top();
+                cout << "(" << get<0>(tmp) << ", " << get<1>(tmp) << ") ->>";
+                local_copy.pop();
             }
             cout << endl;
-            for(auto iterator: this->weights){
-                cout << iterator << " ";
-            }
-            cout << endl;
+            
         }
 
         // is_empty returns wether the priority queue is empty.
@@ -158,21 +130,12 @@ class PriorityQueue{
 
         // Test wether node node is in the queue
         bool contains(int node){
-            // Iterate over the queue.
-            // It we find the element, return the finding, else report not found.
-            for(auto element: this->nodes){
-                if(element == node){
-                    return true;
-                }
-            }
-
-            // We did not find node node and therefore, the node is not in the queue.
-            return false;
+            this->is_in[node];
         }
 
     private:
-        deque<int> nodes; 
-        deque<float> weights;
+        priority_queue <tuple<int, float>, vector<tuple<int, float>>, GreaterNode> nodes; 
+        vector<bool> is_in;
 };
 
 // This class will implement a graph based on an adjecency matrix
@@ -362,7 +325,7 @@ class Graph{
 tuple<vector<int>, float> Graph::shortest_path(int node1, int node2){
 
     // Allocate open and closed set.
-    PriorityQueue open_set;
+    PriorityQueue open_set(this->n_nodes);
     Queue closed_set(this->n_nodes);
 
     // Store the overall distance to.   
@@ -389,11 +352,21 @@ tuple<vector<int>, float> Graph::shortest_path(int node1, int node2){
         next_node = open_set.pop();
 
         if(this->verbose > 0){
-            cout << "next node: " << get<0>(next_node) << endl;
+            cout << "next node: " << get<0>(next_node) << " at distance " << get<1>(next_node) << endl;
         }
 
         // Extract the node
         node = get<0>(next_node);
+
+        // Check whether this node is already in the closed because duplicates can be in the open set!
+        if(closed_set.contains(node)){
+
+            // If the node is already in the closed set we don't need to consider it
+            if(this->verbose > 0){
+                cout << "Abortion because node " << node << " is already in the closed set." << endl;
+            }
+            continue;
+        }
 
         // Put the node we just reached into the closed set and add the distance to the overall distance
         closed_set.add(node);
@@ -406,12 +379,16 @@ tuple<vector<int>, float> Graph::shortest_path(int node1, int node2){
             // Only put a node into the open set, if it is not already in the closed set
             if(!closed_set.contains(nb)){
                 // Depending on whether the node is already in the open set, we either have to update its weight, or to inser it.
-                if(open_set.contains(nb)){
-                    open_set.update(nb, this->adjecency_matrix[node][nb] + get<1>(next_node));
-                } else {
-                    open_set.add(nb, this->adjecency_matrix[node][nb] + get<1>(next_node));
+                open_set.add(nb, this->adjecency_matrix[node][nb] + get<1>(next_node));
+
+                 if(this->verbose > 0){
+                    cout << "Adding " << nb << " at " << this->adjecency_matrix[node][nb] + get<1>(next_node) << "." << endl;
                 }
             }
+        }
+        if(this->verbose > 0){
+            cout << "Open set: " << endl;
+            open_set.print();
         }
     }
 
@@ -438,18 +415,21 @@ bool small_test(){
     test.set_edge(3, 4, 6.0);
     test.set_edge(4, 5, 9.0);
 
+    // For more output change verbosity to 1.
+    test.set_verbosity(0);
+
     auto result = test.shortest_path(0, 4);
     if (get<1>(result) != 20.0){
         cout << "Test 1: Result should be 20 but is " << get<1>(result) << endl;
         return false;
     }
-
+    
     result = test.shortest_path(0, 1);
     if (get<1>(result) != 7.0){
         cout << "Test 1: Result should be 7.0 but is " << get<1>(result) << endl;
         return false;
     }
-
+    
     result = test.shortest_path(0, 0);
     if (get<1>(result) != 0.0){
         cout << "Test 1: Result should be 0.0 but is " << get<1>(result) << endl;
@@ -486,7 +466,7 @@ int main(){
     }
     
     // Testing the implementaion of graph and average shortest path.
-    Graph test_graph = Graph(1000, 0.4, 100.0);
+    Graph test_graph = Graph(10000, 0.001, 100.0);
 
     test_graph.set_verbosity(0);
     //float min_dist = test_graph.average_path_length();

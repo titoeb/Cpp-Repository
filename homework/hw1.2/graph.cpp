@@ -459,10 +459,30 @@ bool small_test(){
     return true;
 }
 
+bool no_connection_test(){
+
+     Graph test = Graph(3);
+    test.set_edge(0, 1, 7.0);
+
+
+    auto result = test.shortest_path(0, 2);
+    auto min_dist = -1.0;
+    if (get<1>(result) != min_dist){
+        cout << "Test 1: Result should be " << min_dist << " but is " << get<1>(result) << endl;
+        return false;
+    }
+
+    return true;
+
+}
 int main(){
 
     if(!small_test()){
         cout << "The test failed !!!" << endl;
+    }
+
+    if(!no_connection_test()){
+        cout << "The no connection test failed !!!" << endl;
     }
     
     // Testing the implementaion of graph and average shortest path.

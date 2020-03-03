@@ -15,12 +15,13 @@ class Queue{
     public:
 
         // Constructor only allocates the internal queue nodes.
-        Queue():nodes(deque<int>()){}
+        Queue(int n_nodes):nodes(deque<int>()), is_in(vector<bool>(n_nodes, false)){}
 
         // Add a new node into the queue.
         // Think of a new node entering the closed set.
         void add(int node){
             this->nodes.push_front(node);
+            this->is_in[node] = true;
         }
 
         // is_empty returns wether the queue is empty.
@@ -36,16 +37,7 @@ class Queue{
 
         // Test wether node node is in the queue
         bool contains(int node){
-            // Iterate over the queue.
-            // It we find the element, return the finding, else report not found.
-            for(auto element: this->nodes){
-                if(element == node){
-                    return true;
-                }
-            }
-
-            // We did not find node node and therefore, the node is not in the queue.
-            return false;
+            return this->is_in[node];
         }
 
         // Return the elements in an vector.
@@ -63,7 +55,11 @@ class Queue{
         }
 
     private:
+        int n_nodes;
         deque<int> nodes; 
+
+        // This vector will be use to make fast is_in operation.
+        vector<bool> is_in;
 };
 
 // My implementation of a priority queue that will store nodes and there respective
@@ -95,6 +91,31 @@ class PriorityQueue{
             } else {
                 this->nodes.insert(nodes_iterator, node);
                 this->weights.insert(weights_iterator, weight);
+            }
+        }
+
+        void update(int node, float weight){
+            // Update the weight of a node if it is smaller than the original weight, e.g. the path is shorter.
+            // This assuemes that then node is in the priority queue.
+
+            // find the node 
+            auto nodes_iterator = this->nodes.begin();
+            auto weights_iterator = this->weights.begin();
+
+            // Find the correct position to insert the node
+            while(*nodes_iterator != node){
+                ++nodes_iterator;
+                ++weights_iterator;
+            }
+
+            // if the weight of the node found is larger than the new weight
+            // Remove the original node and insert it into the right position.
+            if(*weights_iterator > weight){
+
+                this->nodes.erase(nodes_iterator);
+                this->weights.erase(weights_iterator);
+
+                this->add(node, weight);
             }
         }
 
@@ -154,56 +175,6 @@ class PriorityQueue{
         deque<float> weights;
 };
 
-// this is a helper function used in the min_distance function.
-// It findes the minimum from the min_array array and only takes those position into account,
-// that don't have a float:max in the exclude array.
-// Both arrays are assumed to be of size n_nodes.
-float give_min(const float* min_array, const float* exclude_array, int n_nodes){
-
-    // The minimum is initiated to the largest possible value.
-    float min = numeric_limits<float>::max();
-
-    // The position of the minimum ist initiated to an impossible value.
-    int min_pos = -1;
-
-    // Iterate over the array
-    for(int i = 0; i < n_nodes; ++i){
-        // Three conditions have to load to find a new smallest value:
-        // 1) the position does not have to be float:max in the min_array (node is in the open set)
-        // 2) the positions does have to be float:max in the exclude array (node is not in the closed set)
-        // 3) Is is a new minimum.
-        if((min_array[i] < numeric_limits<float>::max()) && (exclude_array[i] == numeric_limits<float>::max()) && (min_array[i] < min)){
-            
-            // There is a new mininum, overwrite the old one.
-            min = min_array[i];
-            min_pos = i;
-        }
-    }
-
-    // Return the position of the minumum,
-    // if no valid minimum was found, return -1.0
-    return min_pos;
-}
-
-// Find the position of the minimum in the vector input.
-int argmin(vector<float> input){
-
-    // Current position of the minimum
-    int min_node = -1;
-
-    // Current minimum
-    float current_min = numeric_limits<float>::max();
-
-    // Iterate over input to find the new minimum.
-    for(int i = 0; i<input.size(); ++i){
-        if ((input[i] < current_min)){
-            min_node = i;
-            current_min = input[i];
-        }
-    }
-    return min_node;
-}
-
 // This class will implement a graph based on an adjecency matrix
 class Graph{
     public:
@@ -223,7 +194,6 @@ class Graph{
         // distance range is the range of the distance and are uniformly sampled from 0, distance_range
         Graph(int n_nodes, float density, float distance_range):n_nodes(n_nodes), verbose(0), n_vertices(0), values(vector<float>(n_nodes, 0.0)){
 
-            cout << "Starting! " << endl;
 
             // Initiallize the adjecency matrix.
             vector< vector<float> > a(n_nodes, vector<float>(n_nodes, numeric_limits<float>::max()));
@@ -336,7 +306,7 @@ class Graph{
         // Dijkstra's Shortest path algorithm.
         // Input two nodes and get the resulting distance.
         //  The implementation will be below.
-        float min_distance(int node1, int node2); 
+        tuple<vector<int>, float> shortest_path(int node1, int node2);
 
         // This function implements the computation of the average path length in the graph.
         float average_path_length(){
@@ -352,7 +322,7 @@ class Graph{
             for(int node = 1; node < this->n_nodes; ++node){
 
                 // Compute the minimal distance.
-                min_dist = this->min_distance(0, node);
+                min_dist = get<1>(this->shortest_path(0, node));
                 if (min_dist != -1.0){
                     // -1.0 means there was no path between 0, node,
                     // this is not the case so sum the found minimal distance to the aggregator.
@@ -389,101 +359,138 @@ class Graph{
 
 // Dijkstra's Shortest path algorithm.
 // Input two nodes and get the resulting distance.
-float Graph::min_distance(int node1, int node2){
+tuple<vector<int>, float> Graph::shortest_path(int node1, int node2){
 
     // Allocate open and closed set.
-    float open_set[this->n_nodes];
-    float closed_set[this->n_nodes];
+    PriorityQueue open_set;
+    Queue closed_set(this->n_nodes);
 
-    // Number of variables in the open set
-    int n_open = 0;
-
-    // Minimal distance and the node.
-    int minimal_node = -1;
+    // Store the overall distance to.   
     float distance_to = 0.0;
+    
+    // tuple to hold the poped entries from the open set
+    tuple<int, float> next_node;
 
-    // Make all entries to zero
-    for(int i = 0; i< this->n_nodes; ++i){
-        open_set[i] =  numeric_limits<float>::max();
-        closed_set[i] =  numeric_limits<float>::max();
-    }
+    // Used to temporary store the node just retrieved from the open set.
+    int node;
+
+    // Store the neigbors of the node.
+    vector<int> neighbors;
 
     // Begin with algorithm.
     // The algorithm is ended if either node2 is in the closed set, then its entry is the minimal distance from node1
     // or if the open set is empty is node2 is not in the close set. Then node2 is not reachable from node 1.
-    n_open = 1;
-    open_set[node1] = 0.0;
-    while((n_open > 0) && (closed_set[node2] == numeric_limits<float>::max())){
-        // Find the minimum in open set
-        minimal_node = give_min(open_set, closed_set, this->n_nodes);
-        cout << "minimal node: " << minimal_node << endl;
+    open_set.add(node1, 0.0);
 
-        if (minimal_node != -1){
-            // Remove the minimal node from the open set to the closed set. 
-            closed_set[minimal_node] = open_set[minimal_node];
+    // Iterate until either the open set is empty or the 
+    while((!open_set.is_empty()) && (!closed_set.contains(node2))){
+        
+        // Get the minimal node from the auto set.
+        next_node = open_set.pop();
 
-            // Add all the reachable nodes to the 
-            for(int reachable_node = 0; reachable_node < this->n_nodes; ++reachable_node){
-                // Based on this node the distance to node reachable node is defined in the following
-                distance_to = this->adjecency_matrix[minimal_node][reachable_node] + open_set[minimal_node];
+        if(this->verbose > 0){
+            cout << "next node: " << get<0>(next_node) << endl;
+        }
 
-                // There are three conditions so that we overwrite / set the value of the reachable node in the open set:
-                // 1) The reachable node is reachable from the minimal node we are looking at.
-                // 2) The reachable node is not in the closed set, then it would be irrelevant
-                // 3) Either the reachable node was not set in the open set or the path via the minimal node is smaller than the path to the reachable node that is currently in the open set.
-                if((this->adjecency_matrix[minimal_node][reachable_node] >= 0.0) && (closed_set[reachable_node] ==  numeric_limits<float>::max()) && ((distance_to < open_set[reachable_node]) || open_set[reachable_node] == numeric_limits<float>::max())){
-                    open_set[reachable_node] = distance_to;
-                        // Some print out for debug
-                    if (this->verbose > 0){
-                        cout << "Added node " << reachable_node << " to the open set at " << open_set[reachable_node] << " ." << endl;
-                    }
-                    
-                    n_open = n_open + 1;
+        // Extract the node
+        node = get<0>(next_node);
+
+        // Put the node we just reached into the closed set and add the distance to the overall distance
+        closed_set.add(node);
+        distance_to = get<1>(next_node);
+
+        // Put all nodes that are reachable from node into the open set.
+        neighbors = this->neighbors(node);
+
+        for(auto nb: neighbors){
+            // Only put a node into the open set, if it is not already in the closed set
+            if(!closed_set.contains(nb)){
+                // Depending on whether the node is already in the open set, we either have to update its weight, or to inser it.
+                if(open_set.contains(nb)){
+                    open_set.update(nb, this->adjecency_matrix[node][nb] + get<1>(next_node));
+                } else {
+                    open_set.add(nb, this->adjecency_matrix[node][nb] + get<1>(next_node));
                 }
             }
-
-            // Some print out for debug
-            if (this->verbose > 0){
-                cout << "Added node " << minimal_node << " to the closed set at " << open_set[minimal_node] << "." << endl;
-                cout << endl;
-            }
-            
-            open_set[minimal_node] = numeric_limits<float>::max();
-            n_open = n_open - 1;
         }
     }
 
-    if (closed_set[node2] >= 0){
+    if (closed_set.contains(node2)){
         // We found the minimal path from node1 to node2 and return it.
-        return closed_set[node2];
+        return tuple<vector<int>, float>(closed_set.elements(), distance_to);
+
     } else {
+
         // There is not path from node1 to node2. Return error code -1.
-        return -1.0;
+        return tuple<vector<int>, float>(vector<int>(), -1.0);
     }
+}
+
+bool small_test(){
+    Graph test = Graph(7);
+    test.set_edge(0, 1, 7.0);
+    test.set_edge(0, 2, 9.0);
+    test.set_edge(0, 5, 14.0);
+    test.set_edge(1, 2, 10.0);
+    test.set_edge(1, 3, 15.0);
+    test.set_edge(2, 5, 2.0);
+    test.set_edge(2, 3, 11.0);
+    test.set_edge(3, 4, 6.0);
+    test.set_edge(4, 5, 9.0);
+
+    auto result = test.shortest_path(0, 4);
+    if (get<1>(result) != 20.0){
+        cout << "Test 1: Result should be 20 but is " << get<1>(result) << endl;
+        return false;
+    }
+
+    result = test.shortest_path(0, 1);
+    if (get<1>(result) != 7.0){
+        cout << "Test 1: Result should be 7.0 but is " << get<1>(result) << endl;
+        return false;
+    }
+
+    result = test.shortest_path(0, 0);
+    if (get<1>(result) != 0.0){
+        cout << "Test 1: Result should be 0.0 but is " << get<1>(result) << endl;
+        return false;
+    }
+
+    result = test.shortest_path(0, 3);
+    if (get<1>(result) != 20.0){
+        cout << "Test 1: Result should be 20.0 but is " << get<1>(result) << endl;
+        return false;
+    }
+
+    result = test.shortest_path(5, 1);
+    float min_dist = 12.0;
+    if (get<1>(result) != min_dist){
+        cout << "Test 1: Result should be " << min_dist << " but is " << get<1>(result) << endl;
+        return false;
+    }
+
+    result = test.shortest_path(4, 2);
+    min_dist = 11.0;
+    if (get<1>(result) != min_dist){
+        cout << "Test 1: Result should be " << min_dist << " but is " << get<1>(result) << endl;
+        return false;
+    }
+
+    return true;
 }
 
 int main(){
 
-    PriorityQueue test;
-
-    test.add(2, 0.1);
-    test.add(3, 0.4);
-    test.add(4, 0.3);
-    test.print();
-
-    auto t = test.pop();
-    cout << get<0>(t) << endl;
-    cout << get<1>(t) << endl;
-
-    test.print();
-
-    /* 
+    if(!small_test()){
+        cout << "The test failed !!!" << endl;
+    }
+    
     // Testing the implementaion of graph and average shortest path.
     Graph test_graph = Graph(1000, 0.4, 100.0);
 
-    test_graph.set_verbosity(1);
+    test_graph.set_verbosity(0);
     //float min_dist = test_graph.average_path_length();
 
-    float min_dist = test_graph.min_distance(0, 10);
-    cout << "The average path length is " << min_dist << "." << endl; */ 
+    auto min_dist = test_graph.shortest_path(0, 10);
+    cout << "The average path length is " << get<1>(min_dist) << "." << endl;
 }

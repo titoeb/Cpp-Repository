@@ -363,9 +363,7 @@ class Graph{
         }
 
         // This function computes the length of the spanning tree
-        float minimum_spanning_tree();
-
-        tuple<float, vector<int>> minimum_spanning_tree_2();
+        tuple<float, vector<int>> minimum_spanning_tree();
 
     private:
         // The number of nodes the network has.
@@ -387,133 +385,70 @@ class Graph{
         vector<vector<float>> adjecency_matrix;
 };
 
-tuple<float, vector<int>> Graph::minimum_spanning_tree_2(){
-     float distance = 0.0;
-    float dist_tmp;
-    int node_entered = 0;
-    int nodes_in_open = 0;
-    int min_node;
-
-    // Buffer to save nodes that are already in the spanning tree or not.
-    vector<float> open_set(this->n_nodes,  numeric_limits<float>::max());
-    vector<bool> closed_set(this->n_nodes, false);
-
-    // Put first node in the set.
-    closed_set[0] = true;
-    node_entered++;
-
-    // Put all nodes reachable in the open set.
-    for(int i = 0; i < this->n_nodes; i++){
-        if((this->adjecency_matrix[0][i] >= 0) && (closed_set[i] == false)){
-            // node i is reachable and not yet in the minimum spanning tree
-            dist_tmp = this->adjecency_matrix[0][i];
-            if((dist_tmp < open_set[i]) || (open_set[i] ==  numeric_limits<float>::max())){
-                open_set[i] = dist_tmp;
-                nodes_in_open++;
-            }
-        }
-    }
-
-    cout << "nodes entered: " << node_entered << ", nodes_in_open: " << nodes_in_open << endl;
-    // Iterate either until all nodes are in the closed set
-    // or some are not but their are no nodes reachable in the open set.
-    while((node_entered < this->n_nodes) && (nodes_in_open > 0)){
-        // Search for node with minimal distance in the open set.
-        min_node = argmin(open_set);
-
-        // Add it to the closed set.
-        closed_set[min_node] = true;
-        node_entered++;
-        distance += open_set[min_node];
-        cout << "Node " << min_node << " entered the closed set with distance " << open_set[min_node] << endl;
-        open_set[min_node] =  numeric_limits<float>::max();
-        nodes_in_open--;
-
-        // Add new available node to open set.
-        for(int i = 0; i < this->n_nodes; i++){
-            if((this->adjecency_matrix[min_node][i] >= 0) && (closed_set[i] == false)){
-                // node i is reachable and not yet in the minimum spanning tree
-                dist_tmp = this->adjecency_matrix[min_node][i];
-                if((dist_tmp < open_set[i]) || (open_set[i] == numeric_limits<float>::max())){
-                    if (open_set[i] == numeric_limits<float>::max()) nodes_in_open++;
-                    open_set[i] = dist_tmp;
-                }
-            }
-        }        
-    }
-
-    // Finally test whether the algorithm was succesful
-    if (node_entered == this->n_nodes){
-        return tuple<float, vector<int>>(distance, vector<int>());
-    } else {
-        return  tuple<float, vector<int>>(-1.0, vector<int>());
-    }
-}
-
-float Graph::minimum_spanning_tree(){
+tuple<float, vector<int>> Graph::minimum_spanning_tree(){
     float distance = 0.0;
     float dist_tmp;
     int node_entered = 0;
     int nodes_in_open = 0;
     int min_node;
 
-    // Buffer to save nodes that are already in the spanning tree or not.
+    vector<int> neighbors;
 
+    // Buffer to save nodes that are already in the spanning tree or not.
     vector<float> open_set(this->n_nodes,  numeric_limits<float>::max());
-    vector<bool> closed_set(this->n_nodes, false);
+    Queue closed_set(this->n_nodes);
 
     // Put first node in the set.
-    closed_set[0] = true;
-    node_entered++;
+    closed_set.add(0);
 
     // Put all nodes reachable in the open set.
-    for(int i = 0; i < this->n_nodes; i++){
-        if((this->adjecency_matrix[0][i] >= 0) && (closed_set[i] == false)){
-            // node i is reachable and not yet in the minimum spanning tree
-            dist_tmp = this->adjecency_matrix[0][i];
-            if((dist_tmp < open_set[i]) || (open_set[i] ==  numeric_limits<float>::max())){
-                open_set[i] = dist_tmp;
-                nodes_in_open++;
-            }
-        }
+    neighbors = this->neighbors(0);
+
+    for(auto element = neighbors.begin(); element != neighbors.end(); ++element){
+        open_set[*element] = this->adjecency_matrix[0][*element];
+        ++nodes_in_open;
     }
 
-    cout << "nodes entered: " << node_entered << ", nodes_in_open: " << nodes_in_open << endl;
+    if(this->verbose > 0){
+        cout << "nodes entered: " << node_entered << ", nodes_in_open: " << nodes_in_open << endl;
+    }
+
     // Iterate either until all nodes are in the closed set
     // or some are not but their are no nodes reachable in the open set.
-    while((node_entered < this->n_nodes) && (nodes_in_open > 0)){
+    while((closed_set.size() < this->n_nodes) && (nodes_in_open > 0)){
+
         // Search for node with minimal distance in the open set.
         min_node = argmin(open_set);
 
         // Add it to the closed set.
-        closed_set[min_node] = true;
+        closed_set.add(min_node);
         node_entered++;
+
         distance += open_set[min_node];
-        cout << "Node " << min_node << " entered the closed set with distance " << open_set[min_node] << endl;
+        if(this->verbose > 0){
+            cout << "Node " << min_node << " entered the closed set with distance " << open_set[min_node] << endl;
+        }
         open_set[min_node] =  numeric_limits<float>::max();
         nodes_in_open--;
 
         // Add new available node to open set.
-        for(int i = 0; i < this->n_nodes; i++){
-            if((this->adjecency_matrix[min_node][i] >= 0) && (closed_set[i] == false)){
-                // node i is reachable and not yet in the minimum spanning tree
-                dist_tmp = this->adjecency_matrix[min_node][i];
-                if((dist_tmp < open_set[i]) || (open_set[i] == numeric_limits<float>::max())){
-                    if (open_set[i] == numeric_limits<float>::max()) nodes_in_open++;
-                    open_set[i] = dist_tmp;
-                }
-            }
-        }        
+        neighbors = this->neighbors(min_node);
+
+        for(auto element = neighbors.begin(); element != neighbors.end(); ++element){
+            if(!closed_set.contains(*element) && open_set[*element] > this->adjecency_matrix[min_node][*element]){
+                open_set[*element] = this->adjecency_matrix[min_node][*element];
+                ++nodes_in_open;
+            }   
+        }
     }
 
     // Finally test whether the algorithm was succesful
-    if (node_entered == this->n_nodes){
-        return distance;
+    if (closed_set.size() == this->n_nodes){
+        return tuple<float, vector<int>>(distance, closed_set.elements());
     } else {
-        return -1.0;
+        return  tuple<float, vector<int>>(-1.0, vector<int>());
     }
 }
-
 
 int main(){
     // Testing the implementaion of graph and average shortest path.
@@ -539,12 +474,12 @@ int main(){
     //cin >> file_name;
     //cout << file_name << endl;
     ifstream word_file(file_name);
-    Graph test_graph(word_file, 1);
+    Graph test_graph(word_file, 0);
     test_graph.print();
 
-    float dist_min_spanning_tree = test_graph.minimum_spanning_tree();
-    float other_dist = get<0>(test_graph.minimum_spanning_tree_2());
+    //float dist_min_spanning_tree = test_graph.minimum_spanning_tree();
+    float other_dist = get<0>(test_graph.minimum_spanning_tree());
 
     // Result should be 33
-    cout << "33 = " << dist_min_spanning_tree << " , " << other_dist << endl;
+    cout << "33 = " << other_dist << endl;
 }

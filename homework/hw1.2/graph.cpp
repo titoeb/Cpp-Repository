@@ -348,7 +348,7 @@ tuple<vector<int>, float> Graph::shortest_path(int node1, int node2){
     // Iterate until either the open set is empty or the 
     while((!open_set.is_empty()) && (!closed_set.contains(node2))){
         
-        // Get the minimal node from the auto set.
+        // Get the minimal node from the open set.
         next_node = open_set.pop();
 
         if(this->verbose > 0){
@@ -486,7 +486,7 @@ int main(){
     }
     
     // Testing the implementaion of graph and average shortest path.
-    Graph test_graph = Graph(10000, 0.001, 100.0);
+    Graph test_graph = Graph(100, 0.001, 100.0);
 
     test_graph.set_verbosity(0);
     //float min_dist = test_graph.average_path_length();

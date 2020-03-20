@@ -8,7 +8,7 @@
 using namespace std;
 
 // Enum level for ai
-enum class Player{HUMAN, STUPIDAI};
+enum class Player{HUMAN, STUPIDAI, SMARTAI};
 
 // This will simulate the board.
 class Hex{
@@ -21,7 +21,8 @@ class Hex{
 
         // Check whether game is over
         bool game_over();
-        bool player_won(Player player);
+        bool red_won();
+        bool blue_won();
 
         // Simulate a turn of a player.
         void player_red_turn();

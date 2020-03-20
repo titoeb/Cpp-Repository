@@ -6,8 +6,9 @@
 #include<ctime>
 #include<cstdlib>
 #include<deque>
-#include<queue>
 #include<tuple>
+#include<vector>
+#include<algorithm>
 
 using namespace std;
 class Queue{
@@ -30,6 +31,9 @@ class Queue{
         // Test wether node node is in the queue
         bool contains(int node);
 
+        // Test whether any node in nodes is in the Queue.
+        bool contains_any(vector<int> nodes);
+
         // Return the elements in an vector.
         vector<int> elements();
 
@@ -47,7 +51,7 @@ class Queue{
 // To compare two points 
 class GreaterNode{ 
 public: 
-    int operator() (const tuple<int, float>& node_1, const tuple<int, float>& node_2);{ 
+    int operator() (const tuple<int, float>& node_1, const tuple<int, float>& node_2){ 
         return get<1>(node_1) > get<1>(node_2); 
     } 
 }; 

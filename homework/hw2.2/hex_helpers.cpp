@@ -25,6 +25,16 @@ bool Queue::contains(int node){
     return this->is_in[node];
 }
 
+// Test whether any node in nodes is in the Queue.
+bool Queue::contains_any(vector<int> nodes){
+    for(auto node: nodes){
+        if(this->contains(node)){
+            return true;
+        }
+    }
+    return false;
+}
+
 // Return the elements in an vector.
 vector<int> Queue::elements(){
 

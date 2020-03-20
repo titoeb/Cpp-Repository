@@ -3,6 +3,8 @@
 
 #include<iostream>
 #include<queue>
+#include<vector>
+#include<algorithm>
 
 #include "hex_helpers.h"
 
@@ -33,6 +35,9 @@ class hexGraph{
         // Test whether one of the upper nodes is connect to one of the lower nodes or one of 
         // the left node is connected to one of the right nodes.
         bool sides_connected();
+
+        // Check if any of the nodes in connected is connected to the nodes in connected_to
+        bool nodes_connected(vector<int> connected, vector<int> connected_to);
 
     private:
         int dimension;

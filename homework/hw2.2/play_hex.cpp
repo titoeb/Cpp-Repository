@@ -28,7 +28,7 @@ void play_hex(){
     cout << "Player blue playes 'X', player red playes 'O'." << endl;
 
     // Run the game
-    while(!h.game_over()){
+    while(!(h.red_won() || h.blue_won())){
         h.player_red_turn();
 
         h.print();
@@ -37,11 +37,11 @@ void play_hex(){
 
         h.print();
     }
-    if (h.player_blue_won()){
+    if (h.blue_won()){
         cout << "Player Blue Won!" << endl;
         h.print();
     } else {
-        if(h.player_red_won()){
+        if(h.red_won()){
             cout << "Player Red Won!" << endl;
             h.print();
         } else {

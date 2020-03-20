@@ -35,12 +35,12 @@ void Hex::print(){
 }
 
 // Check whether game is over
-bool Hex::game_over(){
-    return player_won(this->player_blue) || player_won(this->player_red); 
+bool Hex::blue_won(){
+    return PlayerBlue.sides_connected();
 }
 
-bool Hex::player_won(Player player){
-    return player.sides_connected()
+bool Hex::red_won(){
+    return PlayerRed.sides_connected();
 }
 
 // Add nodes for users

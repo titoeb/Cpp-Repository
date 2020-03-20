@@ -1,4 +1,95 @@
 #include "hex_helpers.h"
+
+// Implementation for the Queue
+
+// Add a new node into the queue.
+// Think of a new node entering the closed set.
+void Queue::add(int node){
+    this->nodes.push_front(node);
+    this->is_in[node] = true;
+}
+
+// is_empty returns wether the queue is empty.
+// This is just for convenience
+bool Queue::is_empty(){
+    return this->size() == 0;
+}
+
+// Return the size of the queue
+int Queue::size(){
+    return this->nodes.size();
+}
+
+// Test wether node node is in the queue
+bool Queue::contains(int node){
+    return this->is_in[node];
+}
+
+// Return the elements in an vector.
+vector<int> Queue::elements(){
+
+    // Initiallize to the accordings size
+    vector<int> elements(this->size());
+
+    // Iterate in reverse order over the queue and put the elements into the vector.
+    for(auto element = this->nodes.end(); element != this->nodes.begin(); --element){
+        elements.push_back(*element);
+    }
+
+    return elements;       
+}
+// Functions for the Priority Queue.
+tuple<int, float> PriorityQueue::pop(){
+
+    // Get the top node from the min heap
+    tuple<int, float> top_node = this->nodes.top();
+
+    // Remove the top node
+    this->nodes.pop();
+
+    // Also remove the node from the is_in vector.
+    this->is_in[get<0>(top_node)];
+
+    return top_node;
+}
+
+// Add a new node into the Priority qeue.
+// Find the correct position and insert it in both
+// the nodes deqeue and the weight deqeue.
+void PriorityQueue::add(int node, float weight){
+    this->nodes.push(tuple<int, float>(node, weight));
+    this->is_in[node] = true;
+}
+
+// Return the size of the queue
+int PriorityQueue::size(){
+    return this->nodes.size();
+}
+
+// Print the priority queue.
+void PriorityQueue::print(){
+    // Create a hard copy of the priority queue.
+    auto local_copy =  priority_queue <tuple<int, float>, vector<tuple<int, float>>, GreaterNode>(this->nodes);
+    tuple<int, float> tmp;
+    while(local_copy.size() > 0){
+        tmp = local_copy.top();
+        cout << "(" << get<0>(tmp) << ", " << get<1>(tmp) << ") ->>";
+        local_copy.pop();
+    }
+    cout << endl;
+    
+}
+
+// is_empty returns wether the priority queue is empty.
+// This is just for convenience
+bool PriorityQueue::is_empty(){
+    return this->size() == 0;
+}
+// Test wether node node is in the queue
+bool PriorityQueue::contains(int node){
+    this->is_in[node];
+}
+
 // Short logic to convert map to coordinate and vice versa
 int coordinate2node(int x_coordinate, int y_coordinate, int dimensions_board){
     return x_coordinate * dimensions_board + y_coordinate;

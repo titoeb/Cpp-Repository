@@ -21,8 +21,7 @@ class Hex{
 
         // Check whether game is over
         bool game_over();
-        bool player_red_won();
-        bool player_blue_won();
+        bool player_won(Player player);
 
         // Simulate a turn of a player.
         void player_red_turn();

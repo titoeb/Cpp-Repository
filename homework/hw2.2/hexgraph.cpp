@@ -111,4 +111,12 @@ void hexGraph::print(){
     bool hexGraph::is_connected(int node_a_x_coordinate, int node_a_y_coordinate, int node_b_x_coordinate, int node_b_y_coordinate){
         return is_connected(coordinate2node(node_a_x_coordinate, node_a_y_coordinate, this->dimension), coordinate2node(node_b_x_coordinate, node_b_y_coordinate, this->dimension));
     }
+
+    // Test whether one of the upper nodes is connect to one of the lower nodes or one of 
+    // the left node is connected to one of the right nodes.
+    bool hexGraph::sides_connected(vector<int> connected, vector<int> connected_to){
+        // Check whether the nodes stores in connected are connect to the nodes in 
+        // connected_to
+        
+    }
     

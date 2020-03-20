@@ -36,52 +36,11 @@ void Hex::print(){
 
 // Check whether game is over
 bool Hex::game_over(){
-    return player_blue_won() || player_red_won(); 
+    return player_won(this->player_blue) || player_won(this->player_red); 
 }
 
-bool Hex::player_red_won(){
-    // Check if upper side is connect to down side or the lift side to the ride side.
-    for(int i = 0; i < this->size; ++i){
-        for(int j = 0; j < this->size; ++j){
-            // For player red to win the game the left side has to be connected to the right side
-            // or the upper side has to be connected to the lower side
-            // Firstly the starting nodes need to be of palyer red. Then they have to be connected.
-            if(PlayerRed.node_exists(0,i) && PlayerRed.node_exists((this->size - 1), j)){
-                if(PlayerRed.is_connected(0,i,(this->size - 1), j)){
-                    return true;
-                }       
-            }
-
-            if(PlayerRed.node_exists(i, 0) && PlayerRed.node_exists(j, (this->size - 1))){
-                if(PlayerRed.is_connected(i, 0, j, (this->size - 1))){
-                    return true;
-                }      
-            }
-        }
-    }
-    return false;
-}
-
-bool Hex::player_blue_won(){
-    // Check if upper side is connect to down side or the lift side to the ride side.
-    for(int i = 0; i < this->size; ++i){
-        for(int j = 0; j < this->size; ++j){
-            // For player blue to win the game the left side has to be connected to the right side
-            // or the upper side has to be connected to the lower side
-            // Firstly the starting nodes need to be of palyer red. Then they have to be connected.
-            if(PlayerBlue.node_exists(0,i) && PlayerBlue.node_exists((this->size - 1), j)){
-                if(PlayerBlue.is_connected(0,i,(this->size - 1), j)){
-                    return true;
-                }       
-            }
-            if(PlayerBlue.node_exists(i, 0) && PlayerBlue.node_exists(j, (this->size - 1))){
-                if(PlayerBlue.is_connected(i, 0, j, (this->size - 1))){
-                     return true;
-                }      
-            }
-        }
-    }
-    return false;
+bool Hex::player_won(Player player){
+    return player.sides_connected()
 }
 
 // Add nodes for users

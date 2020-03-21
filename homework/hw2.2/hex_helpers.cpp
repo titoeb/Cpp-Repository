@@ -87,7 +87,6 @@ void PriorityQueue::print(){
         local_copy.pop();
     }
     cout << endl;
-    
 }
 
 // is_empty returns wether the priority queue is empty.

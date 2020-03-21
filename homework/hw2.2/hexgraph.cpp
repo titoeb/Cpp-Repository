@@ -118,13 +118,13 @@ bool hexGraph::sides_connected(){
     // Check if the upper side is connected to the lower side.
     vector<int> upper_side(this->dimension);
     vector<int> lower_side(this->dimension);
-    
+
     for(int i=0; i < this->dimension; ++i){
-        upper_side.push_back(coordinate2node(0, i, this->dimension));
-        lower_side.push_back(coordinate2node(this->dimension - 1, i, this->dimension));
+        upper_side[i] = coordinate2node(0, i, this->dimension);
+        lower_side[i] = coordinate2node(this->dimension - 1, i, this->dimension);
     }
 
-    if (this->nodes_connected(upper_side, lower_side) == true){
+    if (this->nodes_connected(upper_side, lower_side)){
         return true;
     }
 
@@ -134,11 +134,11 @@ bool hexGraph::sides_connected(){
     vector<int> right_side(this->dimension);
     
     for(int i=0; i < this->dimension; ++i){
-        left_side.push_back(coordinate2node(i, 0, this->dimension));
-        right_side.push_back(coordinate2node(i, this->dimension - 1, this->dimension));
+        left_side[i] = coordinate2node(i, 0, this->dimension);
+        right_side[i] = coordinate2node(i, this->dimension - 1, this->dimension);
     }
 
-    if (this->nodes_connected(left_side, right_side) == true){
+    if (this->nodes_connected(left_side, right_side)){
         return true;
     }
 
@@ -181,12 +181,16 @@ bool hexGraph::nodes_connected(vector<int> connected, vector<int> connected_to){
         if(closed_set.contains(node)){
 
             // If the node is already in the closed set we don't need to consider it
-                continue;
+            continue;
         }
+        
+        // Put the node in the closed set.
+        closed_set.add(next_node);
 
         for(auto nb: this->edgelist[next_node]){
             // Only put a node into the open set, if it is not already in the closed set
-            if(!closed_set.contains(nb)){
+            // Also check that the node is hex game.
+            if(!closed_set.contains(nb) && (this->edgelist[nb].size() > 0)){
                 // Depending on whether the node is already in the open set, we either have to update its weight, or to inser it.
                 open_set.push_front(nb);
             }

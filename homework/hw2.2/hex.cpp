@@ -50,7 +50,7 @@ bool Hex::add_node_red(int node_x, int node_y){
         return false;
     } else {
         // Check whether the node is within the boundaries.
-        if(is_in(node_x, node_x, this->size)){
+        if(is_in(node_x, node_y, this->size)){
             // Add the node
             this->PlayerRed.addNode(node_x, node_y);
             return true;
@@ -90,6 +90,7 @@ void Hex::player_red_turn(){
         }
     }
 }
+
 void Hex::player_blue_turn(){
     if (this->player_blue ==  Player::HUMAN){
         Hex::user_move(1);

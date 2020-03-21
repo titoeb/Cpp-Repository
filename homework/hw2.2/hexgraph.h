@@ -19,6 +19,7 @@ class hexGraph{
 
         // Add a single node into the graph.
         void addNode(int x, int y);
+        void addNode(int node);
 
         // Print out all connections that exist in the graph
         // This is only used for debugging

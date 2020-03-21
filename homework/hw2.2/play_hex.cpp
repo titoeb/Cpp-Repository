@@ -2,55 +2,102 @@
 
 void play_hex(){
     int size;
-    int player_red, player_blue;
+    int player_O, player_X;
+    bool selection = true;
 
     // Select the game size
-    /*cout << "Welcome the game of hax." << endl;
-    cout << "Please insert the size of the board. The size should be more than 1." << endl;
-    cin >> size;*/
-    size = 4;
+    while(selection){
+        selection = false;
+        cout << "Welcome the game of hax." << endl;
+        cout << "Please insert the size of the board. The size should be more than 1." << endl;
+        cin >> size;
 
-    // Intro Players
-    // This is stupid. The codes are defined in the PLAYER enum and could change...
-    /*cout << "Please select the players to be one of: 0: RealHuman, 1: StupidAI" << endl;
-    // Select Player Blue
-    cout << "Your Selection for player Blue:" << endl;
-    cin >> player_blue;
-
-    // Select Player Red
-    cout << "Your Selection for player Red:" << endl;
-    cin >> player_red;*/
-
-    player_red = 1;
-    player_blue = 1; 
-
-    // !!! Error check whether the input is correct!
-
-    // Create the game
-    Hex h(size, static_cast<Player>(player_red), static_cast<Player>(player_blue));
-
-    cout << "Player blue playes 'X', player red playes 'O'." << endl;
-
-    // Run the game
-    while(!(h.red_won() || h.blue_won())){
-        // The players make their move
-        h.player_red_turn();
-        h.player_blue_turn();
-
-        // Show the board to the user
-        h.print();
+        if(size < 0) selection = true;
     }
     
-    // Check who won the game
-    if (h.blue_won()){
-        cout << "Player Blue Won!" << endl;
+
+    // Intro Players
+    cout << "Please select the players to be one of: 0: RealHuman, 1: Random, 2: Monte Carlo" << endl;
+
+    selection = true;
+    while(selection){
+        selection = false;
+       
+        // Select Player X
+        cout << "Your Selection for player X:" << endl;
+        cin >> player_X;
+
+        if(!(player_X == 0 || player_X == 1 || player_X == 2)) selection = true;
+    }
+
+    selection = true;
+    while(selection){
+        selection = false;
+       
+        // Select Player O
+        cout << "Your Selection for player O:" << endl;
+        cin >> player_O;
+
+        if(!(player_O == 0 || player_O == 1 || player_O == 2)) selection = true;
+    }
+    
+
+    // Create the game
+    Hex h(size, static_cast<PlayerType>(player_X), static_cast<PlayerType>(player_O));
+
+    // Run the game
+    while(true){
+         // Let X take his turn and show the board to the user.
+        h.player_X_turn();
         h.print();
-    } else {
-        if(h.red_won()){
-            cout << "Player Red Won!" << endl;
-            h.print();
-        } else {
-            cout << "This can't be! At least one player needs to have won!" << endl;
+
+        // Has X won?
+        if(h.X_won()){
+            cout << "Player X has won!" << endl;
+            break;
+        }
+
+        // Let O take his turn and show the board to the user.
+        h.player_O_turn();
+        h.print();
+
+        // Has O won?
+        if(h.O_won()){
+            cout << "Player 0 has won!" << endl;
+            break;
         }
     }
+}
+
+void bot_play(){
+    int size = 9;
+    int player_O = 2;
+    int player_X = 1;
+
+    // Create the game
+    Hex h(size, static_cast<PlayerType>(player_X), static_cast<PlayerType>(player_O));
+
+    // Run the game
+    while(true){
+         // Let X take his turn and show the board to the user.
+        h.player_X_turn();
+        h.print();
+
+        // Has X won?
+        if(h.X_won()){
+            cout << "Player X has won!" << endl;
+            break;
+        }
+
+        // Let O take his turn and show the board to the user.
+        h.player_O_turn();
+        h.print();
+
+        // Has O won?
+        if(h.O_won()){
+            cout << "Player 0 has won!" << endl;
+            break;
+        }
+    }
+
 }

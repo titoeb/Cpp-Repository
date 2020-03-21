@@ -29,6 +29,7 @@ bool Queue::contains(int node){
 bool Queue::contains_any(vector<int> nodes){
     for(auto node: nodes){
         if(this->contains(node)){
+
             return true;
         }
     }
@@ -153,4 +154,15 @@ int rand_int(int begin, int end){
 
     int random_integer = rand() % diff;
     return begin + random_integer;
+}
+
+int argmax(vector<float> values){
+    int argmax = 0;
+    for(int idx=0; idx<values.size(); ++idx){
+        if (values[idx] > values[argmax]){
+            argmax = idx;
+        }
+    }
+
+    return argmax;
 }

@@ -104,6 +104,9 @@ bool not_in_deques(int node,  deque<int> deque1, deque<int> deque2);
 // Random integer between min and max
 int rand_int(int begin, int end);
 
+// Find position of maximum within a float vector
+int argmax(vector<float> values);
+
 #endif
 
 

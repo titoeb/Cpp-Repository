@@ -3,6 +3,7 @@
 using namespace std;
 
 int main(){
-    play_hex();
+    //play_hex();
+    bot_play();
 }
 

@@ -7,40 +7,48 @@ hexGraph::hexGraph(int dimension):dimension(dimension){
 }
 // Add a node to the graph
 void hexGraph::addNode(int x, int y){
-    // Try to add all surroundings of the node, if they exist.
+    
+    // Convert the rows and columns to the actual node in the graph.
     int this_node = coordinate2node(x, y, this->dimension);
+
+      // Try to add all surroundings of the node, if they exist.
     // Row above:
         // Add node (x-1, y)  
-        if (is_in(x-1, y, this->dimension)){
+        if(is_in(x-1, y, this->dimension)){
             this->edgelist[this_node].push_front(coordinate2node(x - 1, y, this->dimension));
         }    
 
         // Add node (x-1, y+1)
-        if (is_in(x-1, y+1, this->dimension)){
+        if(is_in(x-1, y+1, this->dimension)){
             this->edgelist[this_node].push_front(coordinate2node(x - 1, y + 1, this->dimension));
         }  
 
     // Same row:
         // Add node (x, y-1)
-        if (is_in(x, y-1, this->dimension)){
+        if(is_in(x, y-1, this->dimension)){
             this->edgelist[this_node].push_front(coordinate2node(x, y - 1, this->dimension));
         }  
 
         // Add node(x, y+1)
-        if (is_in(x, y+1, this->dimension)){
+        if(is_in(x, y+1, this->dimension)){
             this->edgelist[this_node].push_front(coordinate2node(x, y + 1, this->dimension));
         }  
 
     // Row below:
         // Add node (x+1, y-1)
-            if (is_in(x+1, y-1, this->dimension)){
+            if(is_in(x+1, y-1, this->dimension)){
             this->edgelist[this_node].push_front(coordinate2node(x + 1, y - 1, this->dimension));
-        }  
+        }
 
         // Add node (x+1, y)
-            if (is_in(x+1, y, this->dimension)){
+            if(is_in(x+1, y, this->dimension)){
             this->edgelist[this_node].push_front(coordinate2node(x + 1, y, this->dimension));
         }
+}
+
+void hexGraph::addNode(int node){
+     // Use addNode function to insert node into the graph.
+    this->addNode(node2coordinate_x(node, this->dimension), node2coordinate_y(node, this->dimension));
 }
 
 // Check whether this node was put into the graph (e.g. is connected to any other node.)
@@ -126,6 +134,7 @@ bool hexGraph::sides_connected(){
 
     if (this->nodes_connected(upper_side, lower_side)){
         return true;
+
     }
 
     // Check if the left side is connected to the right side.
@@ -152,8 +161,8 @@ bool hexGraph::nodes_connected(vector<int> connected, vector<int> connected_to){
     // Check whether the nodes stores in connected are connect to the nodes in 
 
         // Allocate open and closed set.
-    deque<int> open_set(this->dimension);
-    Queue closed_set(this->dimension);
+    deque<int> open_set;
+    Queue closed_set(this->dimension * this->dimension);
     
     // tuple to hold the poped entries from the open set
     int next_node;
@@ -176,17 +185,16 @@ bool hexGraph::nodes_connected(vector<int> connected, vector<int> connected_to){
         // Get the minimal node from the open set.
         next_node = open_set.front();
         open_set.pop_front();
-
+        
         // Check whether this node is already in the closed because duplicates can be in the open set!
-        if(closed_set.contains(node)){
-
+        if(closed_set.contains(next_node)){
             // If the node is already in the closed set we don't need to consider it
             continue;
         }
-        
+         
         // Put the node in the closed set.
         closed_set.add(next_node);
-
+       
         for(auto nb: this->edgelist[next_node]){
             // Only put a node into the open set, if it is not already in the closed set
             // Also check that the node is hex game.

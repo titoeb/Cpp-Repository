@@ -3,6 +3,8 @@
 
 #include<iostream>
 #include<queue>
+#include<vector>
+#include<algorithm>
 
 #include "hex_helpers.h"
 
@@ -17,6 +19,7 @@ class hexGraph{
 
         // Add a single node into the graph.
         void addNode(int x, int y);
+        void addNode(int node);
 
         // Print out all connections that exist in the graph
         // This is only used for debugging
@@ -30,8 +33,12 @@ class hexGraph{
         bool is_connected(int node_a, int node_b);
         bool is_connected(int node_a_x_coordinate, int node_a_y_coordinate, int node_b_x_coordinate, int node_b_y_coordinate);
 
-        // Find the longest path in the graph.
-        // To Do
+        // Test whether one of the upper nodes is connect to one of the lower nodes or one of 
+        // the left node is connected to one of the right nodes.
+        bool sides_connected();
+
+        // Check if any of the nodes in connected is connected to the nodes in connected_to
+        bool nodes_connected(vector<int> connected, vector<int> connected_to);
 
     private:
         int dimension;

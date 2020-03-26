@@ -4,5 +4,6 @@ using namespace std;
 
 int main(){
     play_hex();
+    //bot_play();
 }
 

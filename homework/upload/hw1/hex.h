@@ -16,14 +16,7 @@ const int N_THREADS = 8;
 const int N_SIMULATIONS = 1500;
 
 // Enum level for ai
-enum class PlayerType{HUMAN, STUPIDAI, SMARTAI};
-
-// A single monte-carlo simulation
-bool simulate_move(hexGraph this_player, hexGraph other_player, vector<int> viable_moves, int move, int board_side);
-
-// Additinal functions for the monte carlo simulations
-void simulate_moves(hexGraph this_player, hexGraph other_player, vector<int> viable_moves, vector<int>::iterator moves_begin,
- vector<int>::iterator moves_end, vector<float>::iterator winning_probabilites_begin, vector<float>::iterator winning_probabilites_end,  int n_simulations, int board_size);
+enum class PlayerType{HUMAN, STUPIDAI};
 
 // This will simulate the board.
 class Hex{
@@ -67,8 +60,6 @@ class Hex{
         // Actions for the AI
         void user_move(hexGraph& player, hexGraph& other_player);
         void random_ai(hexGraph& player, hexGraph& other_player);
-        void monte_carlo_ai(hexGraph& player, hexGraph& other_player);
-
 };
 
 #endif

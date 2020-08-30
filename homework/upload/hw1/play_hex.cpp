@@ -17,7 +17,7 @@ void play_hex(){
     
 
     // Intro Players
-    cout << "Please select the players to be one of: 0: RealHuman, 1: Random, 2: Monte Carlo" << endl;
+    cout << "Please select the players to be one of: 0: RealHuman, 1: Random" << endl;
 
     selection = true;
     while(selection){
@@ -27,7 +27,7 @@ void play_hex(){
         cout << "Your Selection for player X:" << endl;
         cin >> player_X;
 
-        if(!(player_X == 0 || player_X == 1 || player_X == 2)) selection = true;
+        if(!(player_X == 0 || player_X == 1)) selection = true;
     }
 
     selection = true;
@@ -38,7 +38,7 @@ void play_hex(){
         cout << "Your Selection for player O:" << endl;
         cin >> player_O;
 
-        if(!(player_O == 0 || player_O == 1 || player_O == 2)) selection = true;
+        if(!(player_O == 0 || player_O == 1)) selection = true;
     }
     
 
@@ -71,7 +71,7 @@ void play_hex(){
 
 void bot_play(){
     int size = 9;
-    int player_O = 2;
+    int player_O = 1;
     int player_X = 1;
 
     // Create the game

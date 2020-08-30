@@ -27,27 +27,79 @@ int save_get(vector<vector<int>> queues, int floor, int default_value)
         return default_value;
 }
 
-bool no_one_wants_in(bool up, int current_floor, vector<vector<int>> queues)
+bool no_one_wants_in(bool up, int current_floor, vector<int> &people, vector<vector<int>> &queues)
 {
     int first_person;
     if (up)
     {
-        // Check all floors above this one.
-        for (int floor = current_floor + 1; floor < queues.size(); floor++)
+        // Anyone it wants out above this floor.
+        for (auto person : people)
         {
-            first_person = save_get(queues, floor, floor);
-            if (first_person >= current_floor)
+            if (person > current_floor)
+            {
                 return false;
+            }
+        }
+
+        // Anyone above wants in
+        for (int next_floor = current_floor + 1; next_floor < queues.size(); next_floor++)
+        {
+            if (next_floor >= save_get(queues, next_floor, next_floor - 1))
+            {
+                return false;
+            }
         }
     }
     else
     {
-        // Check all floors blow this one.
-        for (int floor = current_floor - 1; floor >= 0; floor--)
+        // Anyone it wants out above this floor.
+        for (auto person : people)
         {
-            first_person = save_get(queues, floor, floor);
-            if (first_person <= current_floor)
+            if (person < current_floor)
+            {
                 return false;
+            }
+        }
+
+        // Anyone above wants in
+        for (int next_floor = current_floor - 1; next_floor >= 0; next_floor--)
+        {
+            if (next_floor <= save_get(queues, next_floor, next_floor - 1))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool smart_turn(bool up, int current_floor, vector<vector<int>> queues)
+{
+    // The lift is empty. It only turns if it reached the highest / lowest person wanting in the opposite direction.
+    if (up)
+    {
+        for (int next_floor = current_floor + 1; next_floor < queues.size(); next_floor++)
+        {
+            if (queues[next_floor].size() > 0)
+            {
+                if (queues[next_floor][0] < next_floor)
+                {
+                    return false;
+                }
+            }
+        }
+    }
+    else
+    {
+        for (int next_floor = current_floor - 1; next_floor >= 0; next_floor--)
+        {
+            if (queues[next_floor].size() > 0)
+            {
+                if (queues[next_floor][0] > next_floor)
+                {
+                    return false;
+                }
+            }
         }
     }
     return true;
@@ -86,32 +138,39 @@ bool Lift::turns(vector<vector<int>> &queues)
     //cout << "We are at floor" << this->floor << " and up is" << this->up << " and there are currenly " << this->people.size() << " people in the lift." << endl;
     // if still people in the elevator stay in direction.
     // Otherwise change direction if no one else needs to get off.
-    if (this->people.size() == 0 && no_one_wants_in(this->up, this->floor, queues))
+    if (this->people.size() != 0 && no_one_wants_in(this->up, this->floor, this->people, queues))
         return !this->up;
-    else
+
+    if (this->people.size() == 0 && smart_turn(this->up, this->floor, queues))
     {
-        if (this->up)
+        return !this->up;
+    }
+
+    // if max or min floor is reached turn.
+    if (this->up)
+    {
+        if (floor >= queues.size() - 1)
         {
-            if (floor >= queues.size() - 1)
-                return false;
-            else
-            {
-                return true;
-            }
+            return false;
         }
         else
         {
-            if (floor <= 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return true;
+        }
+    }
+    else
+    {
+        if (floor <= 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
     //cout << "Now up is " << this->up << "." << endl;
+    cout << "this can't be!!" << endl;
 }
 
 bool Lift::done(vector<vector<int>> &queues)
@@ -292,37 +351,38 @@ int main()
     vector<int> result;
     vector<int> expected_result;
 
-    // run_tests({{{}, {}, {5, 5, 5}, {}, {}, {}, {}},
-    //            {{}, {}, {1, 1}, {}, {}, {}, {}},
-    //            {{}, {3}, {4}, {}, {5}, {}, {}},
-    //            {{}, {0}, {}, {}, {2}, {3}, {}},
-    //            {
-    //                {3},
-    //                {2},
-    //                {0},
-    //                {2},
-    //                {},
-    //                {},
-    //                {5},
-    //            }
-
-    //           },
-    //           {{0, 2, 5, 0},
-    //            {0, 2, 1, 0},
-    //            {0, 1, 2, 3, 4, 5, 0},
-    //            {0, 5, 4, 3, 2, 1, 0},
-    //            {0, 1, 2, 3, 6, 5, 3, 2, 0}});
-
-    run_tests({{
-                  {3},
-                  {2},
-                  {0},
-                  {2},
-                  {},
-                  {},
-                  {5},
-              }
+    run_tests({
+                  {{}, {}, {5, 5, 5}, {}, {}, {}, {}},
+                  //    {{}, {}, {1, 1}, {}, {}, {}, {}},
+                  //    {{}, {3}, {4}, {}, {5}, {}, {}},
+                  //    {{}, {0}, {}, {}, {2}, {3}, {}},
+                  //    {
+                  //        {3},
+                  //        {2},
+                  //        {0},
+                  //        {2},
+                  //        {},
+                  //        {},
+                  //        {5},
+                  //    }
 
               },
-              {{0, 1, 2, 3, 6, 5, 3, 2, 0}});
+              {//       {0, 2, 5, 0},
+               //    {0, 2, 1, 0},
+               //    {0, 1, 2, 3, 4, 5, 0},
+               //    {0, 5, 4, 3, 2, 1, 0},
+               {0, 1, 2, 3, 6, 5, 3, 2, 0}});
+
+    // run_tests({{
+    //               {3},
+    //               {2},
+    //               {0},
+    //               {2},
+    //               {},
+    //               {},
+    //               {5},
+    //           }
+
+    //           },
+    //           {{0, 1, 2, 3, 6, 5, 3, 2, 0}});
 }
